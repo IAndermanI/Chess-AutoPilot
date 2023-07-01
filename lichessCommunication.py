@@ -32,7 +32,7 @@ def start_playing():
                     "/div/div[@class='setup-content']"
                     "/div[@class='level buttons']"
                     "/div[@class='config_level']"
-                    "/group[@class='radio']/div[5]/label")
+                    "/group[@class='radio']/div[7]/label")
 
     click_on_button("//main[@class='lobby']"
                     "/div[@class='lobby__table']"
@@ -101,3 +101,16 @@ def make_move(move, color):
     action_chains.move_by_offset(-source_square[0], -source_square[1]).perform()
     action_chains.move_by_offset(target_square[0], target_square[1]).click().perform()
     action_chains.move_by_offset(-target_square[0], -target_square[1]).perform()
+    promotion_coord = ''
+    if promotion == 'q' or promotion == 'Q':
+        promotion_coord = target
+    elif promotion == 'n' or promotion == 'N':
+        promotion_coord = target[0] + ('7' if color == 'white' else '2')
+    elif promotion == 'r' or promotion == 'R':
+        promotion_coord = target[0] + ('6' if color == 'white' else '3')
+    elif promotion == 'b' or promotion == 'B':
+        promotion_coord = target[0] + ('5' if color == 'white' else '4')
+    if len(promotion_coord) > 0:
+        promotion_square = coordinates_of_a_square(promotion_coord, color)
+        action_chains.move_by_offset(promotion_square[0], promotion_square[1]).click().perform()
+        action_chains.move_by_offset(-promotion_square[0], -promotion_square[1]).perform()
