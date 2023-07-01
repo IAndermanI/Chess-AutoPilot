@@ -12,7 +12,9 @@ prev_move = ''
 move_color = 'white'
 
 while True:
-    cur_move = LC.last_move()
+    cur_move = LC.last_move()[:4]
+    if cur_move == 'e1h1' and prev_move == 'e1g1' or cur_move == 'e8h8' and prev_move == 'e8g8' or cur_move == 'e1a1' and prev_move == 'e1c1' or cur_move == 'e8a8' and prev_move == 'e8c8':
+        cur_move = prev_move
     if move_color == color:
         move = ''
         while move == '':
