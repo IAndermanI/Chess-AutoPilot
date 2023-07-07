@@ -103,7 +103,6 @@ def coordinates_of_a_square(square, color):
 
 
 def make_move(move, color):
-    print("Move: " + move)
     source = move[:2]
     target = move[2:4]
     promotion = move[4:]
