@@ -1,3 +1,4 @@
+import time
 from selenium import webdriver
 from selenium.common import TimeoutException
 from selenium.webdriver.common.by import By
@@ -10,14 +11,26 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 driver = webdriver.Chrome()
 wait = WebDriverWait(driver, 10)
-
+driver.get("https://lichess.org/")
 
 def click_on_button(xpath):
     button = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
     button.click()
 
-def start_playing():
-    driver.get("https://lichess.org/")
+def input_data(xpath, data):
+    button = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
+    button.send_keys(data)
+
+def registration():
+    click_on_button("//header[@id='top']/div[@class='site-buttons']/a[@class='signin button button-empty']")
+    time.sleep(0.5)
+    input_data("//div[@id='main-wrap']/main[@class='auth auth-login box box-pad']/form[@class='form3']/div[@class='one-factor']/div[@class='form-group'][1]/input[@id='form3-username']", 'uncle3999@gmail.com')
+    time.sleep(0.5)
+    input_data("//div[@id='main-wrap']/main[@class='auth auth-login box box-pad']/form[@class='form3']/div[@class='one-factor']/div[@class='form-group'][2]/input[@id='form3-password']", 'anderman_tests_bot')
+    time.sleep(0.5)
+    click_on_button("//div[@id='main-wrap']/main[@class='auth auth-login box box-pad']/form[@class='form3']/div[@class='one-factor']/button[@class='submit button']")
+
+def start_playing_with_computer():
     click_on_button("//div[@id='main-wrap']"
                     "/main[@class='lobby']"
                     "/div[@class='lobby__table']"
@@ -32,7 +45,7 @@ def start_playing():
                     "/div/div[@class='setup-content']"
                     "/div[@class='level buttons']"
                     "/div[@class='config_level']"
-                    "/group[@class='radio']/div[5]/label")
+                    "/group[@class='radio']/div[4]/label")
 
     click_on_button("//main[@class='lobby']"
                     "/div[@class='lobby__table']"
@@ -43,6 +56,8 @@ def start_playing():
                     "/button[@class='button button-metal color-submits__button random']/i")
 
 
+def start_playing_with_people():
+    click_on_button("//div[@id='main-wrap']/main[@class='lobby']/div[@class='lobby__app lobby__app-pools']/div[@class='lobby__app__content lpools']/div[7]/div[@class='clock']")
 def detect_color():
     try:
         wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@id='main-wrap']"
@@ -57,7 +72,7 @@ def detect_color():
         return 'black'
 
 
-def last_move():
+def last_move(color):
     html = requests.get(driver.current_url).text
     soup = bs(html, 'html.parser')
     cg_board = soup.find('cg-board')
@@ -88,12 +103,10 @@ def coordinates_of_a_square(square, color):
 
 
 def make_move(move, color):
+    print("Move: " + move)
     source = move[:2]
-    target = move[2:]
-    promotion = ''
-    if len(target) > 2:
-        target = target[:2]
-        promotion = target[2:]
+    target = move[2:4]
+    promotion = move[4:]
     source_square = coordinates_of_a_square(source, color)
     target_square = coordinates_of_a_square(target, color)
     action_chains = ActionChains(driver)
@@ -101,3 +114,16 @@ def make_move(move, color):
     action_chains.move_by_offset(-source_square[0], -source_square[1]).perform()
     action_chains.move_by_offset(target_square[0], target_square[1]).click().perform()
     action_chains.move_by_offset(-target_square[0], -target_square[1]).perform()
+    promotion_coord = ''
+    if promotion == 'q' or promotion == 'Q':
+        promotion_coord = target
+    elif promotion == 'n' or promotion == 'N':
+        promotion_coord = target[0] + ('7' if color == 'white' else '2')
+    elif promotion == 'r' or promotion == 'R':
+        promotion_coord = target[0] + ('6' if color == 'white' else '3')
+    elif promotion == 'b' or promotion == 'B':
+        promotion_coord = target[0] + ('5' if color == 'white' else '4')
+    if len(promotion_coord) > 0:
+        promotion_square = coordinates_of_a_square(promotion_coord, color)
+        action_chains.move_by_offset(promotion_square[0], promotion_square[1]).click().perform()
+        action_chains.move_by_offset(-promotion_square[0], -promotion_square[1]).perform()

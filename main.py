@@ -3,7 +3,8 @@ import lichessCommunication as LC
 import client
 
 file_path = client.get_connector_path()
-LC.start_playing()
+# LC.registration()
+LC.start_playing_with_computer()
 color = LC.detect_color()
 
 client.load_to_file(file_path, color)
@@ -12,8 +13,11 @@ prev_move = ''
 move_color = 'white'
 
 while True:
-    cur_move = LC.last_move()
-    if cur_move == 'e1h1' and prev_move == 'e1g1' or cur_move == 'e8h8' and prev_move == 'e8g8' or cur_move == 'e1a1' and prev_move == 'e1c1' or cur_move == 'e8a8' and prev_move == 'e8c8':
+    cur_move = LC.last_move(color)[:4]
+    if (cur_move == 'e1h1' and prev_move == 'e1g1')\
+            or (cur_move == 'e8h8' and prev_move == 'e8g8')\
+            or (cur_move == 'e1a1' and prev_move == 'e1c1')\
+            or (cur_move == 'e8a8' and prev_move == 'e8c8'):
         cur_move = prev_move
     if move_color == color:
         move = ''
