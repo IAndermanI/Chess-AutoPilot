@@ -1,9 +1,10 @@
 import time
 import lichessCommunication as LC
 import client
+from personalData import login, password
 
 file_path = client.get_connector_path()
-# LC.registration()
+LC.registration(login, password)
 LC.start_playing_with_computer()
 color = LC.detect_color()
 

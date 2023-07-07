@@ -8,28 +8,36 @@ import requests
 from bs4 import BeautifulSoup as bs
 from selenium.webdriver.common.action_chains import ActionChains
 
-
+# Creating driver instance and launch lichess.org website.
+# preparing 'wait' variable for clicking on buttons.
+# It will be used later for waiting until objects starts to be clickable.
 driver = webdriver.Chrome()
 wait = WebDriverWait(driver, 10)
 driver.get("https://lichess.org/")
 
+'''Clicks on button depending on XPATH'''
 def click_on_button(xpath):
     button = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
     button.click()
 
+'''Finds an element in which data can be entered by XPATH and input the data on it.'''
 def input_data(xpath, data):
     button = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
     button.send_keys(data)
 
-def registration():
+'''Registration on lichess.org'''
+def registration(login, password):
     click_on_button("//header[@id='top']/div[@class='site-buttons']/a[@class='signin button button-empty']")
     time.sleep(0.5)
-    input_data("//div[@id='main-wrap']/main[@class='auth auth-login box box-pad']/form[@class='form3']/div[@class='one-factor']/div[@class='form-group'][1]/input[@id='form3-username']", 'uncle3999@gmail.com')
+    input_data("//div[@id='main-wrap']/main[@class='auth auth-login box box-pad']/form[@class='form3']/div[@class='one-factor']/div[@class='form-group'][1]/input[@id='form3-username']", login)
     time.sleep(0.5)
-    input_data("//div[@id='main-wrap']/main[@class='auth auth-login box box-pad']/form[@class='form3']/div[@class='one-factor']/div[@class='form-group'][2]/input[@id='form3-password']", 'anderman_tests_bot')
+    input_data("//div[@id='main-wrap']/main[@class='auth auth-login box box-pad']/form[@class='form3']/div[@class='one-factor']/div[@class='form-group'][2]/input[@id='form3-password']", password)
     time.sleep(0.5)
     click_on_button("//div[@id='main-wrap']/main[@class='auth auth-login box box-pad']/form[@class='form3']/div[@class='one-factor']/button[@class='submit button']")
 
+# difficulty of an engine (5 is the best competitor)
+engine_level = 5
+'''Pushes some different buttons to start a game with computer'''
 def start_playing_with_computer():
     click_on_button("//div[@id='main-wrap']"
                     "/main[@class='lobby']"
@@ -56,8 +64,12 @@ def start_playing_with_computer():
                     "/button[@class='button button-metal color-submits__button random']/i")
 
 
+'''Pushes some different buttons to start a game with real people
+ (you can be banned due to the rules of Lichess, do not use it without necessity)'''
 def start_playing_with_people():
     click_on_button("//div[@id='main-wrap']/main[@class='lobby']/div[@class='lobby__app lobby__app-pools']/div[@class='lobby__app__content lpools']/div[7]/div[@class='clock']")
+
+'''Detects your color (black or white)'''
 def detect_color():
     try:
         wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@id='main-wrap']"
@@ -71,7 +83,7 @@ def detect_color():
     except TimeoutException:
         return 'black'
 
-
+'''Returns last move on the board'''
 def last_move(color):
     html = requests.get(driver.current_url).text
     soup = bs(html, 'html.parser')
@@ -86,6 +98,7 @@ def last_move(color):
         last += from_num_to_file[int(y)] + str(int(x + 1))
     return last
 
+'''Returns coordinates of a square on browser depending on algebraic notation (e.g. e2e4, f7f8Q)'''
 def coordinates_of_a_square(square, color):
     alphabet = 'abcdefgh'
     board_element = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@id='main-wrap']"
@@ -101,7 +114,7 @@ def coordinates_of_a_square(square, color):
     return x0 + square_size * (file + 0.5), y0 + square_size * (rank + 0.5)
 
 
-
+'''Moving a piece on a browser. Also supports promotions and castlings'''
 def make_move(move, color):
     source = move[:2]
     target = move[2:4]
