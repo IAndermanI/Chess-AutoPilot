@@ -1,3 +1,9 @@
+# The main idea is to create a 'connector.txt' file, then send and receive data
+# from it. Easy communication, but it has some disadvantages, e.g. safety. But
+# as I use this program only for myself, it is not such a big problem. The
+# functions' names are speaking for itself what they are doing, so I will not
+# bring any explanations with documentation
+
 import os
 
 def get_connector_path():
