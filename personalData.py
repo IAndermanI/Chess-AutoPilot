@@ -1,2 +1,2 @@
-login = 'uncle3999@gmail.com'
-password = 'anderman_tests_bot'
+login = 'your login on lichess.org'
+password = 'your password on lichess.org'
