@@ -1,0 +1,8 @@
+# Selenium for web automation
+selenium
+
+# Requests for HTTP requests
+requests
+
+# BeautifulSoup for web scraping
+beautifulsoup4
